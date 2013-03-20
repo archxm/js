@@ -1,0 +1,280 @@
+<html>
+<head>
+    <HTA:APPLICATION 
+	SCROLL="yes" 
+	MaximizeButton="yes"
+	INNERBORDER="yes" 
+	SHOWINTASKBAR="yes" 
+	SINGLEINSTANCE="yes"
+	windowstate="normal"
+	/>
+
+<meta content="text/html; charset=utf-8">
+<script type="text/javascript">
+
+////////////////////全局变量//////////////////////
+while (true) {  
+    try {  
+    var w = 1200, h = 900;  
+        window.resizeTo(w, h);  
+        window.moveTo((window.screen.width - w) / 2, (window.screen.height - h) / 2 - 80);  
+        break;  
+    } catch (e) { continue; }  
+}  
+
+////////////////////函数//////////////////////////
+function Base64() {  
+    // private property  
+    _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";  
+   
+    // public method for encoding  
+    this.encode = function (input) {  
+        var output = "";  
+        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;  
+        var i = 0;  
+        input = _utf8_encode(input);  
+        while (i < input.length) {  
+            chr1 = input.charCodeAt(i++);  
+            chr2 = input.charCodeAt(i++);  
+            chr3 = input.charCodeAt(i++);  
+            enc1 = chr1 >> 2;  
+            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);  
+            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);  
+            enc4 = chr3 & 63;  
+            if (isNaN(chr2)) {  
+                enc3 = enc4 = 64;  
+            } else if (isNaN(chr3)) {  
+                enc4 = 64;  
+            }  
+            output = output +  
+            _keyStr.charAt(enc1) + _keyStr.charAt(enc2) +  
+            _keyStr.charAt(enc3) + _keyStr.charAt(enc4);  
+        }  
+        return output;  
+    }  
+   
+    // public method for decoding  
+    this.decode = function (input) {  
+        var output = "";  
+        var chr1, chr2, chr3;  
+        var enc1, enc2, enc3, enc4;  
+        var i = 0;  
+        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");  
+        while (i < input.length) {  
+            enc1 = _keyStr.indexOf(input.charAt(i++));  
+            enc2 = _keyStr.indexOf(input.charAt(i++));  
+            enc3 = _keyStr.indexOf(input.charAt(i++));  
+            enc4 = _keyStr.indexOf(input.charAt(i++));  
+            chr1 = (enc1 << 2) | (enc2 >> 4);  
+            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);  
+            chr3 = ((enc3 & 3) << 6) | enc4;  
+            output = output + String.fromCharCode(chr1);  
+            if (enc3 != 64) {  
+                output = output + String.fromCharCode(chr2);  
+            }  
+            if (enc4 != 64) {  
+                output = output + String.fromCharCode(chr3);  
+            }  
+        }  
+        output = _utf8_decode(output);  
+        return output;  
+    }  
+   
+    // private method for UTF-8 encoding  
+    _utf8_encode = function (string) {  
+        string = string.replace(/\r\n/g,"\n");  
+        var utftext = "";  
+        for (var n = 0; n < string.length; n++) {  
+            var c = string.charCodeAt(n);  
+            if (c < 128) {  
+                utftext += String.fromCharCode(c);  
+            } else if((c > 127) && (c < 2048)) {  
+                utftext += String.fromCharCode((c >> 6) | 192);  
+                utftext += String.fromCharCode((c & 63) | 128);  
+            } else {  
+                utftext += String.fromCharCode((c >> 12) | 224);  
+                utftext += String.fromCharCode(((c >> 6) & 63) | 128);  
+                utftext += String.fromCharCode((c & 63) | 128);  
+            }  
+   
+        }  
+        return utftext;  
+    }  
+   
+    // private method for UTF-8 decoding  
+    _utf8_decode = function (utftext) {  
+        var string = "";  
+        var i = 0;  
+        var c = c1 = c2 = 0;  
+        while ( i < utftext.length ) {  
+            c = utftext.charCodeAt(i);  
+            if (c < 128) {  
+                string += String.fromCharCode(c);  
+                i++;  
+            } else if((c > 191) && (c < 224)) {  
+                c2 = utftext.charCodeAt(i+1);  
+                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));  
+                i += 2;  
+            } else {  
+                c2 = utftext.charCodeAt(i+1);  
+                c3 = utftext.charCodeAt(i+2);  
+                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));  
+                i += 3;  
+            }  
+        }  
+        return string;  
+    }  
+}  
+
+// 判断一个对象是否为 "{}"
+var isEmptyObject=function(v){
+   if(Object.prototype.toString.apply(v)!=='[object Object]')return false;
+   for(var p in v)if(v.hasOwnProperty(p))return false;
+   return true;
+};
+
+function getObjXMLReq()
+{
+    var objXMLReq;
+    //for Mozilla and Safari etc.
+    if (window.XMLHttpRequest){
+        objXMLReq = new XMLHttpRequest();
+    }
+    // IE5 for the mac claims to support window.ActiveXObject, but throws an error when it's used
+    else if (window.ActiveXObject && !(navigator.userAgent.indexOf('Mac') >= 0 && navigator.userAgent.indexOf("MSIE") >= 0)){
+        objXMLReq = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    return objXMLReq;
+}
+
+function showlog(szLog)
+{
+    szLog = "[" + Date() + "]:" +szLog + "\n";
+    txt.value =  txt.value + szLog;
+    txt.scrollTop=txt.scrollHeight
+}
+
+function clearLog()
+{
+    txt.value = "";
+}
+
+function openwin(con)
+{
+ //   alert(con);
+    showlog("模拟广告展示");
+	OpenWindow=window.open("", "newwin", "height=400, width=720,toolbar=no ,scrollbars="+scroll+",menubar=no,alwaysRaised=yes");
+	OpenWindow.document.write(con)
+	OpenWindow.focus();
+	
+	wid = OpenWindow.document.body.offsetWidth
+	
+//	OpenWindow.moveTo(screen.width-wid,130);
+	
+	OpenWindow.document.close()
+}
+
+    function hackSuduku(info) {
+        _qipan = info
+        
+        
+    }
+
+    function ss() {
+        showlog("start");
+        var suduku = "030706840005000000001002030020690785390205014500801903809360172047908056610027408";
+        
+        var qipan = new Array()
+        var index = 0;
+        for(var i = 0; i < sudu.rows.length; i++){
+            var oneRow = new Array();
+            for(var j = 0; j < sudu.rows[i].cells.length; j++){
+                oneRow.push(suduku.charAt(index));
+                if (suduku.charAt(index) != 0) {
+                    sudu.rows[i].cells[j].innerHTML = suduku.charAt(index)
+                }
+                else{
+                    sudu.rows[i].cells[j].innerHTML = "<input type='text' class='num' />"; //"&nbsp;"
+                }
+                index++;
+            }
+            qipan.push(oneRow)
+        }
+        
+        for(var i = 0; i < 9; i++){
+            for(var j = 0; j < 9; j++){
+                showlog("qipan:"+qipan[i][j]);
+            }
+        }
+    }
+    
+    function initPage() {
+        for(var i = 0; i < sudu.rows.length; i++){
+            for(var j = 0; j < sudu.rows[i].cells.length; j++){
+            //    showlog(i)
+            //    showlog(j)
+                var tmp = Math.floor(i/3) + Math.floor(j/3)
+                showlog(Math.floor(i/3) + Math.floor(j/3))
+                if(tmp%2 === 0){
+                    sudu.rows[i].cells[j].bgColor  = "#FFFFCC"
+                }
+                sudu.rows[i].cells[j].innerHTML = tmp
+            }
+        }
+    }
+    
+    
+
+</script >
+
+
+
+<title>easyjs</title>
+
+<style>
+table tr td{
+    width:80;
+    height:80;
+    text-align:center;
+    font-size:50;
+    color:#22FF22;
+}
+    
+.num {
+    width:50;
+    height:50;
+    size:5;
+    border:0;
+    text-align:center;
+    z-index:1;
+    font-size:50;
+    background-color:transparent;
+}
+</style>
+
+</head>
+
+
+
+<body onload="initPage()">
+    
+    <textarea type="text" id="txt" style="width:1000px;height:300px;" onpropertychange="this.scrollTop=this.scrollHeight" onfocus="this.scrollTop=this.scrollHeight"  readonly="readonly"></textarea><br/>
+    <input type="button" value="clear" onclick="clearLog()" />
+    <input type="button" value="add" onclick="ss()" /> <br/>
+    
+    <table id="sudu" border="1"> 
+        <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
+        <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
+        <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
+        <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
+        <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
+        <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
+        <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
+        <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
+        <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
+        
+    </table>
+    
+</body>
+
+</html>
