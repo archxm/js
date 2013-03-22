@@ -299,11 +299,28 @@ function openwin(con)
 			showlog("hackSuduku init over");
 		}
 		
+		
+		/**
+		 * 成员函数 检查一遍
+		 */
+		_oneCheck = function(){
+			for(var i = 0; i < 9; i++){
+				for(var j = 0; j < 9; j++){
+					if(_qipan[i][j] == 0){
+						var heng = _heng[i]
+						var shu = _shu[i]
+						var kuai = _kuai[_whichKuai(new Loc(i,j))]
+					}
+				}
+			}
+		}
+		
+		
 		/**
 		 * 成员函数 解数独
 		 */
 		this.dohack = function(){
-			return
+			_oneCheck()
 		}
 		
 		/**
@@ -343,15 +360,17 @@ function openwin(con)
             }
             qipan.push(oneRow)
         }
-        
+        /*
         for(var i = 0; i < 9; i++){
             for(var j = 0; j < 9; j++){
             //    showlog("qipan:"+qipan[i][j]);
             }
         }
+		*/
 		
 		var hack = new hackSuduku(qipan)
 		hack.init()
+		hack.dohack()
 	//	hack.test()
     }
     
