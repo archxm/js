@@ -174,10 +174,153 @@ function openwin(con)
 	OpenWindow.document.close()
 }
 
+	function Loc(i,j){
+		this.x = i
+		this.y = j
+		this.toString = function(){
+			return "(" + this.x + "," + this.y + ")"
+		}
+	}
+	
     function hackSuduku(info) {
         _qipan = info
+		_maybe = new Array() // 每个格子里可能出现的值
+		_reject = new Array() // 每个格子不可能出现的值
+		
         
-        
+        _heng = new Array()
+		_shu = new Array()
+		_kuai = new Array()
+		
+		_ok = 405
+		_sum = 0
+		
+		
+		/**
+		 * 私有成员函数 取得数独值
+		 */
+		_loc = function(loc){
+			return _qipan[loc.x][loc.y]
+		}
+		
+		/**
+		 * 私有成员函数 设置数独值
+		 */
+		_set = function(loc, val){
+			_qipan[loc.x][loc.y] = val
+			sudu.rows[i].cells[j].innerHTML = val
+		}
+		
+		
+		/**
+		 * 私有成员函数 查询点在第几块
+		 */
+		_whichKuai = function(loc){
+			return Math.floor(loc.x/3) + Math.floor(loc.y/3)
+		}
+		
+		/**
+		 * 私有成员函数 查询点在第几横
+		 */
+		_whichHeng = function(loc){
+			return loc.x
+		}
+		
+		/**
+		 * 私有成员函数 查询点在第几竖
+		 */
+		_whichShu = function(loc){
+			return loc.y
+		}
+		
+		/**
+		 * 成员函数 初始化对象
+		 */
+		this.init = function(){
+			showlog("hackSuduku init start");
+			for(var i = 0; i < 9; i++){
+				// 存横
+				var tmp = new Array()
+				_heng.push(tmp)
+				for(var j = 0; j < 9; j++){
+					tmp.push(new Loc(i,j))
+				}
+				showlog("heng:"+tmp.join(','));
+				
+				// 存竖
+				tmp = new Array()
+				_shu.push(tmp)
+				for(var j = 0; j < 9; j++){
+					tmp.push(new Loc(j,i))
+				}
+				showlog("shu:"+tmp.join(','));
+				
+				// 存块
+				tmp = new Array()
+				_kuai.push(tmp)
+				for(var j = 0; j < 9; j++){
+					var x = Math.floor(i/3)
+					var y = i % 3
+					var x_ = Math.floor(j/3)
+					var y_ = j % 3
+					tmp.push(new Loc(3*x+x_, y*3+y_))
+				}
+				showlog("kuai:"+tmp.join(','));
+			}
+			
+			
+			// 初始化 _maybe
+			for(var i = 0; i < 9; i++){
+				var tmp = new Array()
+				for(var j = 0; j < 9; j++){
+					_maybe.push(tmp)
+					var tmp2 = new Array()
+					tmp.push(tmp2)
+				}
+			}
+			
+			// 初始化 _reject
+			for(var i = 0; i < 9; i++){
+				var tmp = new Array()
+				for(var j = 0; j < 9; j++){
+					_reject.push(tmp)
+					var tmp2 = new Array()
+					tmp.push(tmp2)
+				}
+			}
+
+			// 目前数独数值之和
+			for(var i = 0; i < 9; i++){
+				for(var j = 0; j < 9; j++){
+					_sum += _qipan[i][j]
+				}
+			}
+			showlog("sum:" + _sum)
+			showlog("hackSuduku init over");
+		}
+		
+		/**
+		 * 成员函数 解数独
+		 */
+		this.dohack = function(){
+			return
+		}
+		
+		/**
+		 * 成员函数 测试
+		 */
+		this.test = function(){
+			showlog("test start");
+			for(var i = 0; i < 9; i++){
+				var arr = new Array()
+				for(var j = 0; j < 9; j++){
+					arr.push(_shu[i][j].toString())
+				}
+				showlog("one:" + arr.join(','));
+			}
+			showlog("test over");
+		}
+		
     }
 
     function ss() {
@@ -189,7 +332,7 @@ function openwin(con)
         for(var i = 0; i < sudu.rows.length; i++){
             var oneRow = new Array();
             for(var j = 0; j < sudu.rows[i].cells.length; j++){
-                oneRow.push(suduku.charAt(index));
+                oneRow.push(Number(suduku.charAt(index)));
                 if (suduku.charAt(index) != 0) {
                     sudu.rows[i].cells[j].innerHTML = suduku.charAt(index)
                 }
@@ -203,9 +346,13 @@ function openwin(con)
         
         for(var i = 0; i < 9; i++){
             for(var j = 0; j < 9; j++){
-                showlog("qipan:"+qipan[i][j]);
+            //    showlog("qipan:"+qipan[i][j]);
             }
         }
+		
+		var hack = new hackSuduku(qipan)
+		hack.init()
+	//	hack.test()
     }
     
     function initPage() {
@@ -214,7 +361,7 @@ function openwin(con)
             //    showlog(i)
             //    showlog(j)
                 var tmp = Math.floor(i/3) + Math.floor(j/3)
-                showlog(Math.floor(i/3) + Math.floor(j/3))
+            //    showlog(Math.floor(i/3) + Math.floor(j/3))
                 if(tmp%2 === 0){
                     sudu.rows[i].cells[j].bgColor  = "#FFFFCC"
                 }
