@@ -13,14 +13,14 @@
 <script type="text/javascript">
 
 ////////////////////全局变量//////////////////////
-while (true) {  
-    try {  
-    var w = 1200, h = 900;  
-        window.resizeTo(w, h);  
-        window.moveTo((window.screen.width - w) / 2, (window.screen.height - h) / 2 - 80);  
-        break;  
-    } catch (e) { continue; }  
-}  
+//while (true) {  
+//    try {  
+//    var w = 1200, h = 900;  
+//        window.resizeTo(w, h);  
+//        window.moveTo((window.screen.width - w) / 2, (window.screen.height - h) / 2 - 80);  
+//        break;  
+//    } catch (e) { continue; }  
+//}  
 
 ////////////////////函数//////////////////////////
 function Base64() {  
@@ -133,6 +133,21 @@ var isEmptyObject=function(v){
    return true;
 };
 
+
+//js暂停函数
+function pause(millisecondi)
+{
+    var now = new Date();
+    var exitTime = now.getTime() + millisecondi;
+
+    while(true)
+    {
+        now = new Date();
+        if(now.getTime() > exitTime) return;
+    }
+}
+
+
 function getObjXMLReq()
 {
     var objXMLReq;
@@ -207,8 +222,16 @@ function openwin(con)
 		 * 私有成员函数 设置数独值
 		 */
 		_set = function(loc, val){
+			if(_qipan[loc.x][loc.y] != 0){
+				return;
+			}
+		//	showlog("_set start")
+		//	pause(1000)
 			_qipan[loc.x][loc.y] = val
-			sudu.rows[i].cells[j].innerHTML = val
+			sudu.rows[loc.x].cells[loc.y].innerHTML = val
+			sudu.rows[loc.x].cells[loc.y].className = "paz"
+			_sum += val
+		//	showlog("_set end")
 		}
 		
 		
@@ -216,7 +239,7 @@ function openwin(con)
 		 * 私有成员函数 查询点在第几块
 		 */
 		_whichKuai = function(loc){
-			return Math.floor(loc.x/3) + Math.floor(loc.y/3)
+			return Math.floor(loc.x/3)*3 + Math.floor(loc.y/3)
 		}
 		
 		/**
@@ -272,8 +295,8 @@ function openwin(con)
 			// 初始化 _maybe
 			for(var i = 0; i < 9; i++){
 				var tmp = new Array()
+				_maybe.push(tmp)
 				for(var j = 0; j < 9; j++){
-					_maybe.push(tmp)
 					var tmp2 = new Array()
 					tmp.push(tmp2)
 				}
@@ -282,8 +305,8 @@ function openwin(con)
 			// 初始化 _reject
 			for(var i = 0; i < 9; i++){
 				var tmp = new Array()
+				_reject.push(tmp)
 				for(var j = 0; j < 9; j++){
-					_reject.push(tmp)
 					var tmp2 = new Array()
 					tmp.push(tmp2)
 				}
@@ -300,27 +323,97 @@ function openwin(con)
 		}
 		
 		
+		_hasval = function(arr, val){
+			for(var i = 0; i < 9; i++){
+				
+				if(_loc(arr[i]) == val){
+					//showlog(arr[i] + "has" + val)
+					return true;
+				}
+			}
+			return false
+		}
+		
 		/**
 		 * 成员函数 检查一遍
 		 */
 		_oneCheck = function(){
+			showlog("_oneCheck start")
 			for(var i = 0; i < 9; i++){
 				for(var j = 0; j < 9; j++){
 					if(_qipan[i][j] == 0){
+						var loc = new Loc(i,j)
 						var heng = _heng[i]
-						var shu = _shu[i]
-						var kuai = _kuai[_whichKuai(new Loc(i,j))]
+						var shu = _shu[j]
+						var kuai = _kuai[_whichKuai(loc)]
+						
+						_reject[i][j].length = 0
+						_maybe[i][j].length = 0
+						
+						for(var val = 1; val < 10; val++){
+							if(_hasval(heng, val) || _hasval(shu,val) || _hasval(kuai,val)){
+								_reject[i][j].push(val)
+							//	showlog(loc + " reject:" + val)
+							}
+							else{
+								_maybe[i][j].push(val)
+							//	showlog(loc + " maybe:" + val)
+							}
+						}
+						
 					}
 				}
 			}
+			
+			// 可能的值
+			for(var i = 0; i < 9; i++){
+				for(var j = 0; j < 9; j++){
+					var loc = new Loc(i,j)
+					
+				//	showlog(loc + "maybe len:" + _maybe[i][j].length)
+				//	showlog("maybe :" + _maybe[i][j].join(','))
+					
+					if(_maybe[i][j].length == 1){
+						showlog("set a val" + loc + _maybe[i][j][0]);
+						_set(loc, _maybe[i][j][0])
+						_maybe[i][j].length = 0
+					}
+				}
+			}
+			
+			// 不可能的值
+			for(var i = 0; i < 9; i++){
+				for(var j = 0; j < 9; j++){
+					var loc = new Loc(i,j)
+					if(_reject[i][j].length == 8){
+						var tmpval = 45 - eval(_reject[i][j].join("+"))
+						showlog("set a val by reject:" + loc + tmpval);
+						_set(loc, tmpval)
+						_reject[i][j].length = 0
+					}
+				}
+			}
+			
+			showlog("_oneCheck end")
 		}
 		
-		
+		_lastSum = 0
 		/**
 		 * 成员函数 解数独
 		 */
 		this.dohack = function(){
-			_oneCheck()
+			showlog("dohack start")
+			
+			while(1){
+				_lastSum = _sum
+				_oneCheck()
+				showlog("last sum " + _lastSum)
+				showlog("sum " + _sum)
+				if(_lastSum === _sum){
+					break;
+				}
+			}
+			showlog("dohack end")
 		}
 		
 		/**
@@ -379,7 +472,7 @@ function openwin(con)
             for(var j = 0; j < sudu.rows[i].cells.length; j++){
             //    showlog(i)
             //    showlog(j)
-                var tmp = Math.floor(i/3) + Math.floor(j/3)
+                var tmp = Math.floor(i/3)*3 + Math.floor(j/3)
             //    showlog(Math.floor(i/3) + Math.floor(j/3))
                 if(tmp%2 === 0){
                     sudu.rows[i].cells[j].bgColor  = "#FFFFCC"
@@ -405,6 +498,14 @@ table tr td{
     font-size:50;
     color:#22FF22;
 }
+
+.paz{
+    width:80;
+    height:80;
+    text-align:center;
+    font-size:50;
+    color:#EE00EE;
+}
     
 .num {
     width:50;
@@ -422,11 +523,11 @@ table tr td{
 
 
 
-<body onload="initPage()">
+<body onLoad="initPage()">
     
-    <textarea type="text" id="txt" style="width:1000px;height:300px;" onpropertychange="this.scrollTop=this.scrollHeight" onfocus="this.scrollTop=this.scrollHeight"  readonly="readonly"></textarea><br/>
-    <input type="button" value="clear" onclick="clearLog()" />
-    <input type="button" value="add" onclick="ss()" /> <br/>
+    <textarea type="text" id="txt" style="width:1000px;height:300px;" onpropertychange="this.scrollTop=this.scrollHeight" onFocus="this.scrollTop=this.scrollHeight"  readonly="readonly"></textarea><br/>
+    <input type="button" value="clear" onClick="clearLog()" />
+    <input type="button" value="add" onClick="ss()" /> <br/>
     
     <table id="sudu" border="1"> 
         <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
