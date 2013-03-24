@@ -1,130 +1,130 @@
 <html>
 <head>
-    <HTA:APPLICATION 
-	SCROLL="yes" 
-	MaximizeButton="yes"
-	INNERBORDER="yes" 
-	SHOWINTASKBAR="yes" 
-	SINGLEINSTANCE="yes"
-	windowstate="normal"
-	/>
+<HTA:APPLICATION
+    	SCROLL="yes"
+    	MaximizeButton="yes"
+    	INNERBORDER="yes"
+    	SHOWINTASKBAR="yes"
+    	SINGLEINSTANCE="yes"
+    	windowstate="normal"
+    	/>
 
 <meta content="text/html; charset=utf-8">
 <script type="text/javascript">
 
 ////////////////////全局变量//////////////////////
-//while (true) {  
-//    try {  
-//    var w = 1200, h = 900;  
-//        window.resizeTo(w, h);  
-//        window.moveTo((window.screen.width - w) / 2, (window.screen.height - h) / 2 - 80);  
-//        break;  
-//    } catch (e) { continue; }  
-//}  
+while (true) {
+    try {
+    var w = 1200, h = 900;
+        window.resizeTo(w, h);
+        window.moveTo((window.screen.width - w) / 2, (window.screen.height - h) / 2 - 80);
+        break;
+    } catch (e) { continue; }
+}
 
 ////////////////////函数//////////////////////////
-function Base64() {  
-    // private property  
-    _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";  
-   
-    // public method for encoding  
-    this.encode = function (input) {  
-        var output = "";  
-        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;  
-        var i = 0;  
-        input = _utf8_encode(input);  
-        while (i < input.length) {  
-            chr1 = input.charCodeAt(i++);  
-            chr2 = input.charCodeAt(i++);  
-            chr3 = input.charCodeAt(i++);  
-            enc1 = chr1 >> 2;  
-            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);  
-            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);  
-            enc4 = chr3 & 63;  
-            if (isNaN(chr2)) {  
-                enc3 = enc4 = 64;  
-            } else if (isNaN(chr3)) {  
-                enc4 = 64;  
-            }  
-            output = output +  
-            _keyStr.charAt(enc1) + _keyStr.charAt(enc2) +  
-            _keyStr.charAt(enc3) + _keyStr.charAt(enc4);  
-        }  
-        return output;  
-    }  
-   
-    // public method for decoding  
-    this.decode = function (input) {  
-        var output = "";  
-        var chr1, chr2, chr3;  
-        var enc1, enc2, enc3, enc4;  
-        var i = 0;  
-        input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");  
-        while (i < input.length) {  
-            enc1 = _keyStr.indexOf(input.charAt(i++));  
-            enc2 = _keyStr.indexOf(input.charAt(i++));  
-            enc3 = _keyStr.indexOf(input.charAt(i++));  
-            enc4 = _keyStr.indexOf(input.charAt(i++));  
-            chr1 = (enc1 << 2) | (enc2 >> 4);  
-            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);  
-            chr3 = ((enc3 & 3) << 6) | enc4;  
-            output = output + String.fromCharCode(chr1);  
-            if (enc3 != 64) {  
-                output = output + String.fromCharCode(chr2);  
-            }  
-            if (enc4 != 64) {  
-                output = output + String.fromCharCode(chr3);  
-            }  
-        }  
-        output = _utf8_decode(output);  
-        return output;  
-    }  
-   
-    // private method for UTF-8 encoding  
-    _utf8_encode = function (string) {  
-        string = string.replace(/\r\n/g,"\n");  
-        var utftext = "";  
-        for (var n = 0; n < string.length; n++) {  
-            var c = string.charCodeAt(n);  
-            if (c < 128) {  
-                utftext += String.fromCharCode(c);  
-            } else if((c > 127) && (c < 2048)) {  
-                utftext += String.fromCharCode((c >> 6) | 192);  
-                utftext += String.fromCharCode((c & 63) | 128);  
-            } else {  
-                utftext += String.fromCharCode((c >> 12) | 224);  
-                utftext += String.fromCharCode(((c >> 6) & 63) | 128);  
-                utftext += String.fromCharCode((c & 63) | 128);  
-            }  
-   
-        }  
-        return utftext;  
-    }  
-   
-    // private method for UTF-8 decoding  
-    _utf8_decode = function (utftext) {  
-        var string = "";  
-        var i = 0;  
-        var c = c1 = c2 = 0;  
-        while ( i < utftext.length ) {  
-            c = utftext.charCodeAt(i);  
-            if (c < 128) {  
-                string += String.fromCharCode(c);  
-                i++;  
-            } else if((c > 191) && (c < 224)) {  
-                c2 = utftext.charCodeAt(i+1);  
-                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));  
-                i += 2;  
-            } else {  
-                c2 = utftext.charCodeAt(i+1);  
-                c3 = utftext.charCodeAt(i+2);  
-                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));  
-                i += 3;  
-            }  
-        }  
-        return string;  
-    }  
-}  
+function Base64() {
+    // private property
+    _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+
+    // public method for encoding
+    this.encode = function (input) {
+        var output = "";
+        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+        var i = 0;
+        input = _utf8_encode(input);
+        while (i < input.length) {
+            chr1 = input.charCodeAt(i++);
+            chr2 = input.charCodeAt(i++);
+            chr3 = input.charCodeAt(i++);
+            enc1 = chr1 >> 2;
+            enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+            enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+            enc4 = chr3 & 63;
+            if (isNaN(chr2)) {
+                enc3 = enc4 = 64;
+            } else if (isNaN(chr3)) {
+                enc4 = 64;
+            }
+            output = output +
+            _keyStr.charAt(enc1) + _keyStr.charAt(enc2) +
+            _keyStr.charAt(enc3) + _keyStr.charAt(enc4);
+        }
+        return output;
+    }
+
+    // public method for decoding
+    this.decode = function (input) {
+        var output = "";
+        var chr1, chr2, chr3;
+        var enc1, enc2, enc3, enc4;
+        var i = 0;
+        input = input.replace(/[^A-Za-z0-9+/=]/g, "");
+        while (i < input.length) {
+            enc1 = _keyStr.indexOf(input.charAt(i++));
+            enc2 = _keyStr.indexOf(input.charAt(i++));
+            enc3 = _keyStr.indexOf(input.charAt(i++));
+            enc4 = _keyStr.indexOf(input.charAt(i++));
+            chr1 = (enc1 << 2) | (enc2 >> 4);
+            chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+            chr3 = ((enc3 & 3) << 6) | enc4;
+            output = output + String.fromCharCode(chr1);
+            if (enc3 != 64) {
+                output = output + String.fromCharCode(chr2);
+            }
+            if (enc4 != 64) {
+                output = output + String.fromCharCode(chr3);
+            }
+        }
+        output = _utf8_decode(output);
+        return output;
+    }
+
+    // private method for UTF-8 encoding
+    _utf8_encode = function (string) {
+        string = string.replace(/rn/g,"n");
+        var utftext = "";
+        for (var n = 0; n < string.length; n++) {
+            var c = string.charCodeAt(n);
+            if (c < 128) {
+                utftext += String.fromCharCode(c);
+            } else if((c > 127) && (c < 2048)) {
+                utftext += String.fromCharCode((c >> 6) | 192);
+                utftext += String.fromCharCode((c & 63) | 128);
+            } else {
+                utftext += String.fromCharCode((c >> 12) | 224);
+                utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                utftext += String.fromCharCode((c & 63) | 128);
+            }
+
+        }
+        return utftext;
+    }
+
+    // private method for UTF-8 decoding
+    _utf8_decode = function (utftext) {
+        var string = "";
+        var i = 0;
+        var c = c1 = c2 = 0;
+        while ( i < utftext.length ) {
+            c = utftext.charCodeAt(i);
+            if (c < 128) {
+                string += String.fromCharCode(c);
+                i++;
+            } else if((c > 191) && (c < 224)) {
+                c2 = utftext.charCodeAt(i+1);
+                string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                i += 2;
+            } else {
+                c2 = utftext.charCodeAt(i+1);
+                c3 = utftext.charCodeAt(i+2);
+                string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                i += 3;
+            }
+        }
+        return string;
+    }
+}
 
 // 判断一个对象是否为 "{}"
 var isEmptyObject=function(v){
@@ -178,14 +178,14 @@ function openwin(con)
 {
  //   alert(con);
     showlog("模拟广告展示");
-	OpenWindow=window.open("", "newwin", "height=400, width=720,toolbar=no ,scrollbars="+scroll+",menubar=no,alwaysRaised=yes");
+	var OpenWindow=window.open("", "newwin", "height=400, width=720,toolbar=no ,scrollbars="+scroll+",menubar=no,alwaysRaised=yes");
 	OpenWindow.document.write(con)
 	OpenWindow.focus();
-	
+
 	wid = OpenWindow.document.body.offsetWidth
-	
+
 //	OpenWindow.moveTo(screen.width-wid,130);
-	
+
 	OpenWindow.document.close()
 }
 
@@ -196,28 +196,28 @@ function openwin(con)
 			return "(" + this.x + "," + this.y + ")"
 		}
 	}
-	
+
     function hackSuduku(info) {
         _qipan = info
 		_maybe = new Array() // 每个格子里可能出现的值
 		_reject = new Array() // 每个格子不可能出现的值
-		
-        
+
+
         _heng = new Array()
 		_shu = new Array()
 		_kuai = new Array()
-		
+
 		_ok = 405
 		_sum = 0
-		
-		
+
+
 		/**
 		 * 私有成员函数 取得数独值
 		 */
 		_loc = function(loc){
 			return _qipan[loc.x][loc.y]
 		}
-		
+
 		/**
 		 * 私有成员函数 设置数独值
 		 */
@@ -233,29 +233,29 @@ function openwin(con)
 			_sum += val
 		//	showlog("_set end")
 		}
-		
-		
+
+
 		/**
 		 * 私有成员函数 查询点在第几块
 		 */
 		_whichKuai = function(loc){
 			return Math.floor(loc.x/3)*3 + Math.floor(loc.y/3)
 		}
-		
+
 		/**
 		 * 私有成员函数 查询点在第几横
 		 */
 		_whichHeng = function(loc){
 			return loc.x
 		}
-		
+
 		/**
 		 * 私有成员函数 查询点在第几竖
 		 */
 		_whichShu = function(loc){
 			return loc.y
 		}
-		
+
 		/**
 		 * 成员函数 初始化对象
 		 */
@@ -269,7 +269,7 @@ function openwin(con)
 					tmp.push(new Loc(i,j))
 				}
 				showlog("heng:"+tmp.join(','));
-				
+
 				// 存竖
 				tmp = new Array()
 				_shu.push(tmp)
@@ -277,7 +277,7 @@ function openwin(con)
 					tmp.push(new Loc(j,i))
 				}
 				showlog("shu:"+tmp.join(','));
-				
+
 				// 存块
 				tmp = new Array()
 				_kuai.push(tmp)
@@ -290,8 +290,8 @@ function openwin(con)
 				}
 				showlog("kuai:"+tmp.join(','));
 			}
-			
-			
+
+
 			// 初始化 _maybe
 			for(var i = 0; i < 9; i++){
 				var tmp = new Array()
@@ -301,7 +301,7 @@ function openwin(con)
 					tmp.push(tmp2)
 				}
 			}
-			
+
 			// 初始化 _reject
 			for(var i = 0; i < 9; i++){
 				var tmp = new Array()
@@ -321,11 +321,14 @@ function openwin(con)
 			showlog("sum:" + _sum)
 			showlog("hackSuduku init over");
 		}
-		
-		
+
+
+		/**
+		 * 私有成员函数 检查是否有值
+		 */
 		_hasval = function(arr, val){
 			for(var i = 0; i < 9; i++){
-				
+
 				if(_loc(arr[i]) == val){
 					//showlog(arr[i] + "has" + val)
 					return true;
@@ -333,7 +336,99 @@ function openwin(con)
 			}
 			return false
 		}
-		
+
+		/**
+		 * 私有成员函数 数组查找
+		 */
+		_arrHasVal = function(arr, val){
+			for(var i = 0; i < arr.length; i++){
+				if(arr[i] === val){
+					return i
+				}
+			}
+			return -1
+		}
+
+		_compareLoc = function(loc1, loc2){
+			return loc1.x === loc2.x && loc1.y === loc2.y
+		}
+
+		/**
+		 * 私有成员函数 检查一个组group里，除了给定位置loc外的其他位置，是否拒绝值val
+		 * @return true:其他位置都不能有val，false:其他位置可能存在val
+		 */
+		_otherPosRejectVal = function(group, loc, val){
+		//	showlog("check " + val + "in" + loc)
+			for(var i = 0; i < 9; i++){
+				var tmploc = group[i]
+				var reject = _reject[tmploc.x][tmploc.y]
+				if(_compareLoc(loc, tmploc)||reject.length == 0){
+				//	showlog(loc + "loc self")
+					continue
+				}
+
+				
+				if(_arrHasVal(reject, val) == -1){
+			//		showlog(tmploc+"no reject val"+val)
+					return false
+				}
+
+			}
+
+			return true
+		}
+
+		/**
+		 * 私有成员函数 检查是否排斥该给定的值
+		 */
+		_checkGrid = function(loc){
+			var maybe = _maybe[loc.x][loc.y]
+			if(maybe.length == 0){
+				return false
+			}
+
+			if(maybe.length == 1){
+				_set(loc, _maybe[loc.x][loc.y][0])
+				_maybe[loc.x][loc.y].length = 0
+				_reject[loc.x][loc.y].length = 0
+			//	showlog("maybe.length == 1")
+				return true
+			}
+
+			for(var i = 0; i < maybe.length; i++){
+				var val = maybe[i]
+
+				var heng = _heng[loc.x]
+				var shu = _shu[loc.y]
+				var kuai = _kuai[_whichKuai(loc)]
+
+				if(_otherPosRejectVal(heng, loc, val)){
+					_set(loc, val)
+					_maybe[loc.x][loc.y].length = 0
+					_reject[loc.x][loc.y].length = 0
+					return true
+				}
+
+				if(_otherPosRejectVal(shu, loc, val)){
+					_set(loc, val)
+					_maybe[loc.x][loc.y].length = 0
+					_reject[loc.x][loc.y].length = 0
+					return true
+				}
+
+				if(_otherPosRejectVal(kuai, loc, val)){
+					_set(loc, val)
+					_maybe[loc.x][loc.y].length = 0
+					_reject[loc.x][loc.y].length = 0
+					return true
+				}
+
+			}
+
+			return false
+
+		}
+
 		/**
 		 * 成员函数 检查一遍
 		 */
@@ -346,10 +441,10 @@ function openwin(con)
 						var heng = _heng[i]
 						var shu = _shu[j]
 						var kuai = _kuai[_whichKuai(loc)]
-						
+
 						_reject[i][j].length = 0
 						_maybe[i][j].length = 0
-						
+
 						for(var val = 1; val < 10; val++){
 							if(_hasval(heng, val) || _hasval(shu,val) || _hasval(kuai,val)){
 								_reject[i][j].push(val)
@@ -360,27 +455,30 @@ function openwin(con)
 							//	showlog(loc + " maybe:" + val)
 							}
 						}
-						
+					//	showlog(loc + " rejuect:" + _reject[i][j].join(','))
+
 					}
 				}
+
 			}
-			
+
+			/*
 			// 可能的值
 			for(var i = 0; i < 9; i++){
 				for(var j = 0; j < 9; j++){
 					var loc = new Loc(i,j)
-					
+
 				//	showlog(loc + "maybe len:" + _maybe[i][j].length)
-				//	showlog("maybe :" + _maybe[i][j].join(','))
-					
+				//	showlog(loc+ "maybe :" + _maybe[i][j].join(','))
+
 					if(_maybe[i][j].length == 1){
-						showlog("set a val" + loc + _maybe[i][j][0]);
+					//	showlog("set a val by maybe:" + loc + _maybe[i][j][0]);
 						_set(loc, _maybe[i][j][0])
 						_maybe[i][j].length = 0
 					}
 				}
 			}
-			
+
 			// 不可能的值
 			for(var i = 0; i < 9; i++){
 				for(var j = 0; j < 9; j++){
@@ -393,29 +491,40 @@ function openwin(con)
 					}
 				}
 			}
-			
+			*/
+
+			for(var i = 0; i < 9; i++){
+				for(var j = 0; j < 9; j++){
+					var loc = new Loc(i,j)
+					if(_checkGrid(loc)){
+						showlog("_oneCheck end")
+						return
+					}
+				}
+			}
+
 			showlog("_oneCheck end")
 		}
-		
+
 		_lastSum = 0
 		/**
 		 * 成员函数 解数独
 		 */
 		this.dohack = function(){
 			showlog("dohack start")
-			
+
 			while(1){
 				_lastSum = _sum
 				_oneCheck()
-				showlog("last sum " + _lastSum)
-				showlog("sum " + _sum)
+			//	showlog("last sum " + _lastSum)
+			//	showlog("sum " + _sum)
 				if(_lastSum === _sum){
 					break;
 				}
 			}
 			showlog("dohack end")
 		}
-		
+
 		/**
 		 * 成员函数 测试
 		 */
@@ -430,13 +539,16 @@ function openwin(con)
 			}
 			showlog("test over");
 		}
-		
+
     }
 
     function ss() {
         showlog("start");
-        var suduku = "030706840005000000001002030020690785390205014500801903809360172047908056610027408";
-        
+//        var suduku = "030706840005000000001002030020690785390205014500801903809360172047908056610027408";
+//		var suduku = "000000800400208051083900007040500082005000400870009030200007160360105004004000000";
+//		var suduku = "000900102400106000080020005630000500004507900005000031900060010000809007706002000"
+		var suduku = "100000006005000700000300104500003010019080003080641000000038050700400300000065201"
+
         var qipan = new Array()
         var index = 0;
         for(var i = 0; i < sudu.rows.length; i++){
@@ -460,13 +572,13 @@ function openwin(con)
             }
         }
 		*/
-		
+
 		var hack = new hackSuduku(qipan)
 		hack.init()
 		hack.dohack()
 	//	hack.test()
     }
-    
+
     function initPage() {
         for(var i = 0; i < sudu.rows.length; i++){
             for(var j = 0; j < sudu.rows[i].cells.length; j++){
@@ -481,8 +593,8 @@ function openwin(con)
             }
         }
     }
-    
-    
+
+
 
 </script >
 
@@ -506,7 +618,7 @@ table tr td{
     font-size:50;
     color:#EE00EE;
 }
-    
+
 .num {
     width:50;
     height:50;
@@ -524,12 +636,12 @@ table tr td{
 
 
 <body onLoad="initPage()">
-    
+
     <textarea type="text" id="txt" style="width:1000px;height:300px;" onpropertychange="this.scrollTop=this.scrollHeight" onFocus="this.scrollTop=this.scrollHeight"  readonly="readonly"></textarea><br/>
     <input type="button" value="clear" onClick="clearLog()" />
     <input type="button" value="add" onClick="ss()" /> <br/>
-    
-    <table id="sudu" border="1"> 
+
+    <table id="sudu" border="1">
         <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
         <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
         <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
@@ -539,9 +651,9 @@ table tr td{
         <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
         <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
         <tr><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
-        
+
     </table>
-    
+
 </body>
 
 </html>
