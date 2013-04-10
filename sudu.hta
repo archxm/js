@@ -198,17 +198,17 @@ function openwin(con)
 	}
 
     function hackSuduku(info) {
-        _qipan = info
-		_maybe = new Array() // 每个格子里可能出现的值
-		_reject = new Array() // 每个格子不可能出现的值
+        var _qipan = info
+		var _maybe = new Array() // 每个格子里可能出现的值
+		var _reject = new Array() // 每个格子不可能出现的值
 
 
-        _heng = new Array()
-		_shu = new Array()
-		_kuai = new Array()
+        var _heng = new Array()
+		var _shu = new Array()
+		var _kuai = new Array()
 
-		_ok = 405
-		_sum = 0
+		var _ok = 405
+		var _sum = 0
 
 
 		/**
@@ -222,7 +222,24 @@ function openwin(con)
 		 * 私有成员函数 设置数独值
 		 */
 		_set = function(loc, val){
+			showlog("set start" + loc + val)
 			if(_qipan[loc.x][loc.y] != 0){
+				showlog("set exception:"+loc + val);
+				return;
+			}
+		//	showlog("_set start")
+		//	pause(1000)
+			_qipan[loc.x][loc.y] = val
+			sudu.rows[loc.x].cells[loc.y].innerHTML = val
+			sudu.rows[loc.x].cells[loc.y].className = "paz"
+			_sum += val
+		//	showlog("_set end")
+		}
+
+		this.setval = function(loc, val){
+			showlog("set start" + loc + val)
+			if(_qipan[loc.x][loc.y] != 0){
+				showlog("setval exception:"+loc + val);
 				return;
 			}
 		//	showlog("_set start")
@@ -302,6 +319,8 @@ function openwin(con)
 				}
 			}
 
+			showlog("init _maybe over")
+
 			// 初始化 _reject
 			for(var i = 0; i < 9; i++){
 				var tmp = new Array()
@@ -312,9 +331,45 @@ function openwin(con)
 				}
 			}
 
+			showlog("init _reject over")
+
+			for(var i = 0; i < 9; i++){
+				for(var j = 0; j < 9; j++){
+					if(_qipan[i][j] == 0){
+						var loc = new Loc(i,j)
+						var heng = _heng[i]
+						var shu = _shu[j]
+						var kuai = _kuai[_whichKuai(loc)]
+
+						_reject[i][j].length = 0
+						_maybe[i][j].length = 0
+
+					//	showlog("check maybe for loc:" + loc)
+
+						for(var val = 1; val < 10; val++){
+							if(_hasval(heng, val) || _hasval(shu,val) || _hasval(kuai,val)){
+								_reject[i][j].push(val)
+							//	showlog(loc + " reject:" + val)
+							}
+							else{
+							//	showlog("maybe:" + val)
+								_maybe[i][j].push(val)
+							//	showlog(loc + " maybe:" + val)
+							}
+						}
+					//	showlog(loc + " rejuect:" + _reject[i][j].join(','))
+
+					}
+				}
+
+			}
+
+			showlog("init _maybe _reject value over")
+
 			// 目前数独数值之和
 			for(var i = 0; i < 9; i++){
 				for(var j = 0; j < 9; j++){
+				//	showlog("_sum:" + _sum)
 					_sum += _qipan[i][j]
 				}
 			}
@@ -382,25 +437,34 @@ function openwin(con)
 		 * 私有成员函数 检查是否排斥该给定的值
 		 */
 		_checkGrid = function(loc){
+		//	showlog("_checkGrid start:" + loc)
 			var maybe = _maybe[loc.x][loc.y]
 			if(maybe.length == 0){
+			//	showlog("maybe length == 0")
 				return false
 			}
 
+		//	showlog("loc:" + loc + ",maybe:" + maybe)
+
 			if(maybe.length == 1){
+			//	showlog("maybe length == 1")
 				_set(loc, _maybe[loc.x][loc.y][0])
 				_maybe[loc.x][loc.y].length = 0
 				_reject[loc.x][loc.y].length = 0
-			//	showlog("maybe.length == 1")
 				return true
 			}
+			
 
 			for(var i = 0; i < maybe.length; i++){
 				var val = maybe[i]
 
+			//	showlog("check maybe val:" + val)
+
 				var heng = _heng[loc.x]
 				var shu = _shu[loc.y]
 				var kuai = _kuai[_whichKuai(loc)]
+
+			//	showlog("_otherPosRejectVal heng")
 
 				if(_otherPosRejectVal(heng, loc, val)){
 					_set(loc, val)
@@ -409,6 +473,8 @@ function openwin(con)
 					return true
 				}
 
+			//	showlog("_otherPosRejectVal shu")
+
 				if(_otherPosRejectVal(shu, loc, val)){
 					_set(loc, val)
 					_maybe[loc.x][loc.y].length = 0
@@ -416,15 +482,21 @@ function openwin(con)
 					return true
 				}
 
+			//	showlog("_otherPosRejectVal kuai")
 				if(_otherPosRejectVal(kuai, loc, val)){
+				//	showlog("kuai reject val,loc:"+loc + "val:" + val)
 					_set(loc, val)
 					_maybe[loc.x][loc.y].length = 0
 					_reject[loc.x][loc.y].length = 0
 					return true
 				}
 
+			//	showlog("_otherPosRejectVal over")
+
 			}
 
+
+			showlog("_checkGrid over:" + loc)
 			return false
 
 		}
@@ -436,14 +508,16 @@ function openwin(con)
 			showlog("_oneCheck start")
 			for(var i = 0; i < 9; i++){
 				for(var j = 0; j < 9; j++){
+					_reject[i][j].length = 0
+					_maybe[i][j].length = 0
+
 					if(_qipan[i][j] == 0){
 						var loc = new Loc(i,j)
 						var heng = _heng[i]
 						var shu = _shu[j]
 						var kuai = _kuai[_whichKuai(loc)]
 
-						_reject[i][j].length = 0
-						_maybe[i][j].length = 0
+						
 
 						for(var val = 1; val < 10; val++){
 							if(_hasval(heng, val) || _hasval(shu,val) || _hasval(kuai,val)){
@@ -462,48 +536,101 @@ function openwin(con)
 
 			}
 
-			/*
-			// 可能的值
-			for(var i = 0; i < 9; i++){
-				for(var j = 0; j < 9; j++){
-					var loc = new Loc(i,j)
+			showlog("_oneCheck init  maybe value over ")
 
-				//	showlog(loc + "maybe len:" + _maybe[i][j].length)
-				//	showlog(loc+ "maybe :" + _maybe[i][j].join(','))
-
-					if(_maybe[i][j].length == 1){
-					//	showlog("set a val by maybe:" + loc + _maybe[i][j][0]);
-						_set(loc, _maybe[i][j][0])
-						_maybe[i][j].length = 0
-					}
-				}
-			}
-
-			// 不可能的值
-			for(var i = 0; i < 9; i++){
-				for(var j = 0; j < 9; j++){
-					var loc = new Loc(i,j)
-					if(_reject[i][j].length == 8){
-						var tmpval = 45 - eval(_reject[i][j].join("+"))
-						showlog("set a val by reject:" + loc + tmpval);
-						_set(loc, tmpval)
-						_reject[i][j].length = 0
-					}
-				}
-			}
-			*/
 
 			for(var i = 0; i < 9; i++){
 				for(var j = 0; j < 9; j++){
+					// 确定一个值
 					var loc = new Loc(i,j)
 					if(_checkGrid(loc)){
 						showlog("_oneCheck end")
-						return
+						return true
+					}
+					// 冲突检查
+					if(_reject[i][j].length >= 9){
+						showlog("find clash:" + loc)
+						return false;
 					}
 				}
 			}
 
 			showlog("_oneCheck end")
+		}
+
+		var pthis = this;
+
+		this.maybe_ = function(loc){
+			showlog("func maybe")
+			return _maybe[loc.x][loc.y]
+		}
+
+		/*
+		 *@brief: 获取一个待猜测的格子
+		 **/
+		var getAGuessGrid = function(){
+			showlog("_getAGuessGrid start")
+			var loc = new Loc(0,0);
+
+			for(var i = 0; i < 9; i++){
+				for(var j = 0; j < 9; j++){
+					var maybe = _maybe[loc.x][loc.y]
+					var maybe2 = _maybe[i][j]
+					if(maybe2.length == 0){
+						continue
+					}
+
+					if(maybe.length == 0){
+						loc = new Loc(i,j)
+						continue
+					}
+
+					if(maybe2.length < maybe.length){
+						loc = null
+						loc = new Loc(i,j)
+					}
+				}
+			}
+
+			showlog("_getAGuessGrid over")
+			return loc;
+		}
+
+		
+		_oneGuess = function(){
+			showlog("one guess start")
+
+			var loc = getAGuessGrid()
+			var maybe = pthis.maybe_(loc)
+			showlog("guess loc:" + loc + "maybe val:" + maybe)
+
+
+			for(var index = 0; index < maybe.length; index++){
+				// 把原有数据缓存起来，对错误假设进行恢复
+				var tmpQipan = new Array();
+				for (var i = 0; i < 9; i++) {
+					var oneRow = new Array();
+					for(var j = 0; j < 9; j++){
+						oneRow.push(_qipan[i][j])
+					}
+
+					tmpQipan.push(oneRow)
+				}
+
+				var newHack = new hackSuduku(tmpQipan)
+				newHack.init()
+
+				newHack.setval(loc, maybe[index])
+
+				var res = newHack.dohack()
+
+				if(res == 2){ // 猜测错误
+					showlog("clash err,loc:" + loc + "val:" + maybe[index])
+					continue
+				}
+
+			}
+
 		}
 
 		_lastSum = 0
@@ -515,11 +642,21 @@ function openwin(con)
 
 			while(1){
 				_lastSum = _sum
-				_oneCheck()
+				var res = _oneCheck()
+				if(res == false){
+					return 2; // 之前的猜测错误
+				}
 			//	showlog("last sum " + _lastSum)
 			//	showlog("sum " + _sum)
+				if (_sum === _ok) {
+					showlog("hack over")
+					return 0 // 成功
+				}
+
 				if(_lastSum === _sum){
-					break;
+					showlog("do guess")
+					_oneGuess()
+				//	return 1; // 需要做猜测
 				}
 			}
 			showlog("dohack end")
@@ -541,6 +678,37 @@ function openwin(con)
 		}
 
     }
+
+
+
+    /*
+     * @brief:新的类，用于解析suduku
+     **/
+    // function newHack(info){
+    // 	function copyQipan(info){
+    // 		for(var i = 0; i < 9; i++){
+    // 			var oneRow = new Array();
+    // 			for(var j = 0; j < 9; j++){
+    // 				oneRow.push(info[i][j])
+    // 			}
+    // 			qipan.push(oneRow)
+    // 		}
+    // 	}
+
+    // 	function getMaybe(){
+
+    // 	}
+
+    // 	function oneCheck(){
+
+    // 	}
+
+    // 	var qipan;
+    // 	var maybe;
+
+    // 	copyQipan(info)
+    // }
+
 
     function ss() {
         showlog("start");
@@ -600,7 +768,7 @@ function openwin(con)
 
 
 
-<title>easyjs</title>
+<title>suduku</title>
 
 <style>
 table tr td{
